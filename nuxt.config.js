@@ -37,5 +37,13 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  router: {
+    base: '/first-nuxt-three/'
+  },
+
+  generate: {
+    dir: 'docs'
   }
 }
