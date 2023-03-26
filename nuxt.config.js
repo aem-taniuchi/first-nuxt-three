@@ -39,7 +39,12 @@ export default {
   build: {
     transpile: [
       'three'
-    ]
+    ],
+    extend (config, ctx) {
+      if(!config.module) {
+        config.module.rules.push({ test: /\.(glsl)$/i, use: ["raw-loader"]});
+      }
+    }
   },
 
   router: {

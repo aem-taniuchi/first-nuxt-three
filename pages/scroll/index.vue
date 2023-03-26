@@ -49,12 +49,6 @@
 </script>
 
 <style scoped>
-* {
-	margin: 0;
-	padding: 0;
-	line-height: 1.75;
-	box-sizing: border-box;
-}
 .content {
 	width: 100%;
 }
