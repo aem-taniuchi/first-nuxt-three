@@ -41,11 +41,12 @@ export default class ArtworkGL {
     return new Promise((resolve, reject) => {
       // iOS以外（android）の場合には追加処理が必要ないのでresolveを返す
       if (!this.isIos()) resolve("resolve");
-      function deviceOrienEvent() {
+      const deviceOrienEvent = () => {
+        hideDeviceOrienModal();
         window.removeEventListener("deviceorientation", deviceOrienEvent, false);
         resolve("resolve");
-      }
-      window.addEventListener("deviceorientation", false);
+      };
+      window.addEventListener("deviceorientation", deviceOrienEvent, false);
       deviceOrienModal = $modal;
       deviceOrienModalButton = $modal_button;
       const alertMessage = "モーションセンサーの使用が拒否されました。\nこのページを楽しむには、デバイスモーションセンサーの使用を許可する必要があります。\nSafariのアプリを再起動して、モーションセンサーの使用（「動作と方向」へのアクセス）を許可をしてください。";
