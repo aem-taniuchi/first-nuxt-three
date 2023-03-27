@@ -42,38 +42,38 @@ export default class ArtworkGL {
       // iOS以外（android）の場合には追加処理が必要ないのでresolveを返す
       if (!this.isIos()) resolve("resolve");
       const deviceOrienEvent = () => {
-        hideDeviceOrienModal();
+        hideDeviceOrienModal($modal);
         window.removeEventListener("deviceorientation", deviceOrienEvent, false);
         resolve("resolve");
       };
       window.addEventListener("deviceorientation", deviceOrienEvent, false);
-      deviceOrienModal = $modal;
-      deviceOrienModalButton = $modal_button;
       const alertMessage = "モーションセンサーの使用が拒否されました。\nこのページを楽しむには、デバイスモーションセンサーの使用を許可する必要があります。\nSafariのアプリを再起動して、モーションセンサーの使用（「動作と方向」へのアクセス）を許可をしてください。";
-      deviceOrienModal.classList.remove("is-hidden");
-      deviceOrienModalButton.addEventListener("click", () => {
+      $modal.classList.remove("is-hidden");
+      $modal_button.addEventListener("click", () => {
         if (
           DeviceMotionEvent && 
           DeviceMotionEvent.requestPermission &&
           typeof DeviceMotionEvent.requestPermission === "function"
-          ) {
-            DeviceMotionEvent.requestPermission().then((res) => {
-              console.log(res);
-              if (res === "granted") {
-                this.hideDeviceOrienModal(deviceOrienModal);
-                resolve("resolve");
-              } else {
-                alert(alertMessage);
-                reject("resolve");
-              }
-            })
-          }
+        ) {
+          DeviceMotionEvent.requestPermission().then((res) => {
+            console.log(res);
+            if (res === "granted") {
+              this.hideDeviceOrienModal($modal);
+              resolve("resolve");
+            } else {
+              alert(alertMessage);
+              reject("resolve");
+            }
+          })
+        } else {
+          alert("モーションセンサーの使用が可能な端末からアクセスしてください。");
+        }
       })
     });
   };
 
-  hideDeviceOrienModal(deviceOrienModal) {
-    deviceOrienModal.classList.add("is-hidden");
+  hideDeviceOrienModal($modal) {
+    $modal.classList.add("is-hidden");
   };
 
   init($canvas) {
