@@ -60,7 +60,7 @@ export default class ArtworkGL {
             DeviceMotionEvent.requestPermission().then((res) => {
               console.log(res);
               if (res === "granted") {
-                this.hideDeviceOrienModal();
+                this.hideDeviceOrienModal(deviceOrienModal);
                 resolve("resolve");
               } else {
                 alert(alertMessage);
@@ -72,7 +72,7 @@ export default class ArtworkGL {
     });
   };
 
-  hideDeviceOrienModal() {
+  hideDeviceOrienModal(deviceOrienModal) {
     deviceOrienModal.classList.add("is-hidden");
   };
 
