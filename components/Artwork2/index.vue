@@ -1,14 +1,14 @@
 <template lang="pug">
 .content
   canvas#world(ref="canvas")
-  video#video.video(src playsinline ref="video")
-  #device-orien-modal.device-orien-modal.is-hidden(ref="modal")
+  video.video(src playsinline ref="video")
+  .device-orien-modal.is-hidden(ref="modal")
     .device-orien-modal-inner
       p
         |このページでは端末の向きと方向を取得します。
         br
         |次に表示されるポップアップに従って「許可」を選択してください。
-      button#device-orien-modal-button.device-orien-modal-button OK
+      button.device-orien-modal-button(ref="modal_button") OK
   
 </template>
   
@@ -31,6 +31,7 @@ export default {
       this.artworkGL = new ArtworkGL({
         $canvas: this.$refs.canvas,
         $modal: this.$refs.modal,
+        $modal_button: this.$refs.modal_button,
         $video: this.$refs.video
       });
   },

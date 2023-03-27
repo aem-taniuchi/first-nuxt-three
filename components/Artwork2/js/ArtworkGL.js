@@ -18,8 +18,62 @@ export default class ArtworkGL {
     this.rotationY = 0;
 
     this.props = props;
-    this.init(this.props.$canvas);
+
+    this.checkDeviceOrien(this.props.$modal, this.props.$modal_button)
+      .then(() => {
+        this.init(this.props.$canvas);
+      })
+      .catch((error) => {
+        alert(error);
+      })
   }
+
+  isIos() {
+    const ua = navigator.userAgent.toLowerCase();
+    return (
+      ua.indexOf("iphone") >= 0 ||
+      ua.indexOf("ipad") >= 0 ||
+      ua.indexOf("ipod") >= 0
+    );
+  };
+
+  checkDeviceOrien($modal, $modal_button) {
+    return new Promise((resolve, reject) => {
+      // iOS以外（android）の場合には追加処理が必要ないのでresolveを返す
+      if (!this.isIos()) resolve("resolve");
+      function deviceOrienEvent() {
+        window.removeEventListener("deviceorientation", deviceOrienEvent, false);
+        resolve("resolve");
+      }
+      window.addEventListener("deviceorientation", false);
+      deviceOrienModal = $modal;
+      deviceOrienModalButton = $modal_button;
+      const alertMessage = "モーションセンサーの使用が拒否されました。\nこのページを楽しむには、デバイスモーションセンサーの使用を許可する必要があります。\nSafariのアプリを再起動して、モーションセンサーの使用（「動作と方向」へのアクセス）を許可をしてください。";
+      deviceOrienModal.classList.remove("is-hidden");
+      deviceOrienModalButton.addEventListener("click", () => {
+        if (
+          DeviceMotionEvent && 
+          DeviceMotionEvent.requestPermission &&
+          typeof DeviceMotionEvent.requestPermission === "function"
+          ) {
+            DeviceMotionEvent.requestPermission().then((res) => {
+              console.log(res);
+              if (res === "granted") {
+                this.hideDeviceOrienModal();
+                resolve("resolve");
+              } else {
+                alert(alertMessage);
+                reject("resolve");
+              }
+            })
+          }
+      })
+    });
+  };
+
+  hideDeviceOrienModal() {
+    deviceOrienModal.classList.add("is-hidden");
+  };
 
   init($canvas) {
     this.size = {
@@ -56,9 +110,7 @@ export default class ArtworkGL {
     this.renderer = new THREE.WebGLRenderer({
       canvas: $canvas,
     });
-    console.log($canvas);
     this.renderer.setClearColor(0x0000ff, 1.0);
-    console.log(this.size.windowW);
     this.renderer.setSize(this.size.windowW, this.size.windowH);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setAnimationLoop(() => {
