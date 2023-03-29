@@ -27,7 +27,7 @@ export default class ArtworkGL {
         this.initVideo(this.props.$video);
       })
       .catch((error) => {
-        alert(error);
+        alert('モーションセンサーの使用が可能な端末からアクセスしてください。');
       })
   }
 
@@ -40,40 +40,50 @@ export default class ArtworkGL {
     );
   };
 
+  isGyro() {
+    return window.DeviceOrientationEvent && 'ontouchstart' in window;
+  }
+
   checkDeviceOrien($modal, $modal_button) {
     return new Promise((resolve, reject) => {
+      if (!this.isGyro()) {
+        reject("resolve");
+      }
+      
       // iOS以外（android）の場合には追加処理が必要ないのでresolveを返す
       if (!this.isIos()) {
         resolve("resolve");
       }
-      const deviceOrienEvent = () => {
-        hideDeviceOrienModal($modal);
-        window.removeEventListener("deviceorientation", deviceOrienEvent, false);
-        resolve("resolve");
-      };
-      window.addEventListener("deviceorientation", deviceOrienEvent, false);
-      const alertMessage = "モーションセンサーの使用が拒否されました。\nこのページを楽しむには、デバイスモーションセンサーの使用を許可する必要があります。\nSafariのアプリを再起動して、モーションセンサーの使用（「動作と方向」へのアクセス）を許可をしてください。";
-      $modal.classList.remove("is-hidden");
-      $modal_button.addEventListener("click", () => {
-        if (
-          DeviceMotionEvent && 
-          DeviceMotionEvent.requestPermission &&
-          typeof DeviceMotionEvent.requestPermission === "function"
-        ) {
-          DeviceMotionEvent.requestPermission().then((res) => {
-            console.log(res);
-            if (res === "granted") {
-              this.hideDeviceOrienModal($modal);
-              resolve("resolve");
-            } else {
-              alert(alertMessage);
-              reject("resolve");
-            }
-          })
-        } else {
-          alert("モーションセンサーの使用が可能な端末からアクセスしてください。");
-        }
-      })
+
+      if (this.isIos()) {
+        const deviceOrienEvent = () => {
+          hideDeviceOrienModal($modal);
+          window.removeEventListener("deviceorientation", deviceOrienEvent, false);
+          resolve("resolve");
+        };
+        
+        window.addEventListener("deviceorientation", deviceOrienEvent, false);
+        const alertMessage = "モーションセンサーの使用が拒否されました。\nこのページを楽しむには、デバイスモーションセンサーの使用を許可する必要があります。\nSafariのアプリを再起動して、モーションセンサーの使用（「動作と方向」へのアクセス）を許可をしてください。";
+        $modal.classList.remove("is-hidden");
+        $modal_button.addEventListener("click", () => {
+          if (
+            DeviceMotionEvent && 
+            DeviceMotionEvent.requestPermission &&
+            typeof DeviceMotionEvent.requestPermission === "function"
+          ) {
+            DeviceMotionEvent.requestPermission().then((res) => {
+              console.log(res);
+              if (res === "granted") {
+                this.hideDeviceOrienModal($modal);
+                resolve("resolve");
+              } else {
+                alert(alertMessage);
+                reject("resolve");
+              }
+            })
+          }
+        })
+      }
     });
   };
 
@@ -127,9 +137,6 @@ export default class ArtworkGL {
       })
       .catch(function (error) {
         console.log(error);
-        alert(
-          "カメラの使用が拒否されています。\nページを再読み込みして使用を許可するか、ブラウザの設定をご確認ください。"
-        );
       });
   };
 
