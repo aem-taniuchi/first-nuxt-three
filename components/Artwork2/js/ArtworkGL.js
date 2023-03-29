@@ -210,7 +210,7 @@ export default class ArtworkGL {
 
   takePicture($shutter_button) {
     $shutter_button.addEventListener('click', function() {
-			var dataURL = this.renderer.domElement.toDataURL();
+			var dataURL = this.renderer.domElement.toDataURL('image/png');
 			
 			var link = document.createElement("a");
 			link.download = "ar_test.png";
