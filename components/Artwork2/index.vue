@@ -9,7 +9,7 @@
         br
         |次に表示されるポップアップに従って「許可」を選択してください。
       button.device-orien-modal-button(ref="modal_button") OK
-  .shutter_button(ref="shutter_button") 撮影
+  .shutter-button(ref="shutter_button") 撮影
   
 </template>
   
