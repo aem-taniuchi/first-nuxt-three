@@ -8,6 +8,8 @@ export default class ArtworkGL {
     this.renderer = null;
     this.object = null;
     this.controls = null;
+    this.videoInput = null;
+    this.videoStream = null;
 
     this.size = {
         windowW: null,
@@ -22,6 +24,7 @@ export default class ArtworkGL {
     this.checkDeviceOrien(this.props.$modal, this.props.$modal_button)
       .then(() => {
         this.init(this.props.$canvas);
+        this.initVideo(this.props.$video);
       })
       .catch((error) => {
         alert(error);
@@ -40,7 +43,9 @@ export default class ArtworkGL {
   checkDeviceOrien($modal, $modal_button) {
     return new Promise((resolve, reject) => {
       // iOS以外（android）の場合には追加処理が必要ないのでresolveを返す
-      if (!this.isIos()) resolve("resolve");
+      if (!this.isIos()) {
+        resolve("resolve");
+      }
       const deviceOrienEvent = () => {
         hideDeviceOrienModal($modal);
         window.removeEventListener("deviceorientation", deviceOrienEvent, false);
@@ -87,6 +92,71 @@ export default class ArtworkGL {
     this.setRenderer($canvas);
   };
 
+  initVideo($video) {
+    $video.addEventListener("loadedmetadata", this.adjustVideo($video));
+    navigator.mediaDevices
+    .enumerateDevices()
+    .then((devices) => {
+      this.videoInput = devices.filter((device) => device.kind === "videoinput");
+      this.getVideo($video);
+    })
+  };
+
+  setVideo() {
+    return {
+      audio: false,
+      video: {
+        deviceId: this.videoInput,
+        facingMode: "environment",
+        width: { min: 1280, max: 1920 },
+        height: { min: 720, max: 1080 }
+      }
+    }
+  };
+
+  getVideo($video) {
+    if (this.videoStream) {
+      this.videoStream.getTracks().forEach((track) => track.stop());
+    }
+    navigator.mediaDevices
+      .getUserMedia(this.setVideo())
+      .then(function (stream) {
+        $video.srcObject = stream;
+        $video.play();
+        this.videoStream = stream;
+      })
+      .catch(function (error) {
+        console.log(error);
+        alert(
+          "カメラの使用が拒否されています。\nページを再読み込みして使用を許可するか、ブラウザの設定をご確認ください。"
+        );
+      });
+  };
+
+  adjustVideo($video) {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const videoWidth = $video.videoWidth;
+    const videoHeight = $video.videoHeight;
+
+    let videoAspect = videoWidth / videoHeight;
+    let windowAspect = windowWidth / windowHeight;
+
+    if (windowAspect < videoAspect) {
+      let newWidth = videoAspect * windowHeight;
+      $video.style.width = newWidth + "px";
+      $video.style.marginLeft = -(newWidth - windowWidth) / 2 + "px";
+      $video.style.height = windowHeight + "px";
+      $video.style.marginTop = "0px";
+    } else {
+      let newHeight = 1 / (videoAspect / windowWidth);
+      $video.style.height = newHeight + "px";
+      $video.style.marginTop = -(newHeight - windowHeight) / 2 + "px";
+      $video.style.width = windowWidth + "px";
+      $video.style.marginLeft = "0px";
+    }
+  }
+
   setScene() {
     this.scene = new THREE.Scene();
   };
@@ -109,9 +179,11 @@ export default class ArtworkGL {
 
   setRenderer($canvas) {
     this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
       canvas: $canvas,
     });
-    this.renderer.setClearColor(0x0000ff, 1.0);
+    this.renderer.setClearColor(0x000000, 0);
     this.renderer.setSize(this.size.windowW, this.size.windowH);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setAnimationLoop(() => {
