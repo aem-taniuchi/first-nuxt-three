@@ -29,6 +29,8 @@ export default class ArtworkGL {
       .catch((error) => {
         alert('モーションセンサーの使用が可能な端末からアクセスしてください。');
       })
+
+    this.takePicture(this.props.$shutter_button);
   }
 
   isIos() {
@@ -188,6 +190,7 @@ export default class ArtworkGL {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
+      preserveDrawingBuffer: true,
       canvas: $canvas,
     });
     this.renderer.setClearColor(0x000000, 0);
@@ -204,4 +207,16 @@ export default class ArtworkGL {
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
+
+  takePicture($shutter_button) {
+    $shutter_button.addEventListener('click', function() {
+			var dataURL = this.renderer.domElement.toDataURL();
+			
+			var link = document.createElement("a");
+			link.download = "ar_test.png";
+			link.href = dataURL;
+			link.target = "_blank";
+			link.click();
+    })
+  }
 };

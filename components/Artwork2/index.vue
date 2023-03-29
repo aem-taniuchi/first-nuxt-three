@@ -9,6 +9,7 @@
         br
         |次に表示されるポップアップに従って「許可」を選択してください。
       button.device-orien-modal-button(ref="modal_button") OK
+  .shutter_button(ref="shutter_button") 撮影
   
 </template>
   
@@ -32,7 +33,8 @@ export default {
         $canvas: this.$refs.canvas,
         $modal: this.$refs.modal,
         $modal_button: this.$refs.modal_button,
-        $video: this.$refs.video
+        $video: this.$refs.video,
+        $shutter_button: this.$refs.shutter_button
       });
   },
   destroyed() {
@@ -99,5 +101,18 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
+}
+
+.shutter-button {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  z-index: 2;
+  background-color: #c01111;
+  color: #FFF;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 16px;
+  line-height: 1;
 }
 </style>
