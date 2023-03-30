@@ -110,7 +110,7 @@ export default {
   z-index: 2;
   background-color: #c01111;
   color: #FFF;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 3px;
   font-size: 16px;
   line-height: 1;
