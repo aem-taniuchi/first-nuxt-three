@@ -23,14 +23,12 @@ export default class ArtworkGL {
 
     this.checkDeviceOrien(this.props.$modal, this.props.$modal_button)
       .then(() => {
-        this.init(this.props.$canvas);
+        this.init(this.props.$canvas, this.props.$shutter_button);
         this.initVideo(this.props.$video);
       })
       .catch((error) => {
         alert('モーションセンサーの使用が可能な端末からアクセスしてください。');
       })
-
-    this.takePicture(this.props.$shutter_button);
   }
 
   isIos() {
@@ -93,7 +91,7 @@ export default class ArtworkGL {
     $modal.classList.add("is-hidden");
   };
 
-  init($canvas) {
+  init($canvas, $shutter_button) {
     this.size = {
       windowW: window.innerWidth,
       windowH: window.innerHeight
@@ -101,7 +99,7 @@ export default class ArtworkGL {
     this.setScene();
     this.setCamera();
     this.setObject();
-    this.setRenderer($canvas);
+    this.setRenderer($canvas, $shutter_button);
   };
 
   initVideo($video) {
@@ -186,7 +184,7 @@ export default class ArtworkGL {
     this.scene.add(this.object);
   };
 
-  setRenderer($canvas) {
+  setRenderer($canvas, $shutter_button) {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -199,6 +197,7 @@ export default class ArtworkGL {
     this.renderer.setAnimationLoop(() => {
       this.render();
     });
+    this.takePicture($shutter_button);
   };
 
   render() {
