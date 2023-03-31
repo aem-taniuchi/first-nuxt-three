@@ -23,7 +23,7 @@ export default class ArtworkGL {
 
     this.checkDeviceOrien(this.props.$modal, this.props.$modal_button)
       .then(() => {
-        this.init(this.props.$canvas, this.props.$shutter_button);
+        this.init(this.props.$canvas);
         this.initVideo(this.props.$video);
       })
       .catch((error) => {
@@ -91,7 +91,7 @@ export default class ArtworkGL {
     $modal.classList.add("is-hidden");
   };
 
-  init($canvas, $shutter_button) {
+  init($canvas) {
     this.size = {
       windowW: window.innerWidth,
       windowH: window.innerHeight
@@ -99,7 +99,7 @@ export default class ArtworkGL {
     this.setScene();
     this.setCamera();
     this.setObject();
-    this.setRenderer($canvas, $shutter_button);
+    this.setRenderer($canvas);
   };
 
   initVideo($video) {
@@ -184,7 +184,7 @@ export default class ArtworkGL {
     this.scene.add(this.object);
   };
 
-  setRenderer($canvas, $shutter_button) {
+  setRenderer($canvas) {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -197,7 +197,7 @@ export default class ArtworkGL {
     this.renderer.setAnimationLoop(() => {
       this.render();
     });
-    this.takePicture($shutter_button);
+    // this.takePicture(this.renderer, $shutter_button);
   };
 
   render() {
@@ -207,16 +207,16 @@ export default class ArtworkGL {
     this.renderer.render(this.scene, this.camera);
   };
 
-  takePicture($shutter_button) {
-    $shutter_button.addEventListener('click', function() {
-			var dataURL = this.renderer.domElement.toDataURL();
+  // takePicture(renderer, $shutter_button) {
+  //   $shutter_button.addEventListener('click', function() {
+	// 		var dataURL = renderer.domElement.toDataURL();
 			
-			var link = document.createElement("a");
-			link.download = "ar_test.png";
-			link.href = dataURL;
-			link.target = "_blank";
-      document.body.appendChild(link);
-			link.click();
-    });
-  };
+	// 		var link = document.createElement("a");
+	// 		link.download = "ar_test.png";
+	// 		link.href = dataURL;
+	// 		link.target = "_blank";
+  //     document.body.appendChild(link);
+	// 		link.click();
+  //   });
+  // };
 };
